@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <windows.h>
 
 #define mapWidth 80
 #define mapHeight 25
@@ -53,12 +54,29 @@ void PutObjectOnMap(TObject obj) {
             map[j][i] = '@';
 }
 
+void setCur(int x, int y) {
+
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
 int main() {
 
     InitObject(&fighter, 39, 23, 3, 2);
-    clearMap();
-    PutObjectOnMap(fighter);
-    ShowMap();
+
+    do {
+
+        clearMap();
+        PutObjectOnMap(fighter);
+
+        setCur(0, 0);
+        ShowMap();
+    
+    }
+    while (GetKeyState(VK_ESCAPE) >= 0);
+    
 
    return 0;
 }
