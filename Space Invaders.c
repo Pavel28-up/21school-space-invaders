@@ -9,6 +9,7 @@
 typedef struct {
     float x, y;
     float width, height;
+    char cType;
 }TObject;
 
 char map[mapHeight][mapWidth+1];
@@ -37,11 +38,12 @@ void SetObjectPos(TObject *obj, float xPos, float yPos) {
     (*obj).y = yPos;
 }
 
-void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeight) {
+void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeight, char inType) {
 
     SetObjectPos(obj, xPos, yPos);
     (*obj).width = oWidth;
-    (*obj).height= oHeight;
+    (*obj).height = oHeight;
+    (*obj).cType = inType;
 }
 
 void PutObjectOnMap(TObject obj) {
@@ -53,7 +55,7 @@ void PutObjectOnMap(TObject obj) {
 
     for (int i = ix; i < (ix + iWidth); i++)
         for (int j = iy; j < (iy + iHeight); j++)
-            map[j][i] = '@';
+            map[j][i] = obj.cType;
 }
 
 void setCur(int x, int y) {
@@ -76,12 +78,61 @@ void CreateWave() {
     movingLength = 0; 
     moving = realloc(moving, 0);
 
-    InitObject(&fighter, 39, 23, 3, 2);
+    InitObject(&fighter, 39, 24, 2, 1, '@');
 
-    InitObject(GetMewMoving(), 37, 3 , 1, 1);
-    InitObject(GetMewMoving(), 39, 3 , 1, 1);
-    InitObject(GetMewMoving(), 41, 3 , 1, 1);
-    InitObject(GetMewMoving(), 43, 3 , 1, 1);
+    InitObject(GetMewMoving(), 36, 1, 2, 1, '!');
+    InitObject(GetMewMoving(), 40, 1, 2, 1, '!');
+    InitObject(GetMewMoving(), 44, 1, 2, 1, '!');
+    InitObject(GetMewMoving(), 48, 1, 2, 1, '!');
+
+    InitObject(GetMewMoving(), 32, 3, 2, 1, '+');
+    InitObject(GetMewMoving(), 36, 3, 2, 1, '+');
+    InitObject(GetMewMoving(), 40, 3, 2, 1, '+');
+    InitObject(GetMewMoving(), 44, 3, 2, 1, '+');
+    InitObject(GetMewMoving(), 48, 3, 2, 1, '+');
+    InitObject(GetMewMoving(), 52, 3, 2, 1, '+');
+
+    InitObject(GetMewMoving(), 28, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 32, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 36, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 40, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 44, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 48, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 52, 5, 2, 1, '?');
+    InitObject(GetMewMoving(), 56, 5, 2, 1, '?');
+
+    InitObject(GetMewMoving(), 24, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 28, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 32, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 36, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 40, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 44, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 48, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 52, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 56, 7, 2, 1, '*');
+    InitObject(GetMewMoving(), 60, 7, 2, 1, '*');
+
+    InitObject(GetMewMoving(), 24, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 28, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 32, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 36, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 40, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 44, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 48, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 52, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 56, 9, 2, 1, '*');
+    InitObject(GetMewMoving(), 60, 9, 2, 1, '*');
+
+    InitObject(GetMewMoving(), 24, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 28, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 32, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 36, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 40, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 44, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 48, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 52, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 56, 11, 2, 1, '*');
+    InitObject(GetMewMoving(), 60, 11, 2, 1, '*');
 }
 
 int main() {
