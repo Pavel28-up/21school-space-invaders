@@ -13,6 +13,8 @@ typedef struct {
 
 char map[mapHeight][mapWidth+1];
 TObject fighter;
+TObject *moving;
+int movingLength;
 
 
 void clearMap() {
@@ -62,17 +64,42 @@ void setCur(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-int main() {
+TObject *GetMewMoving() {
+
+    movingLength++;
+    moving = realloc(moving, sizeof(*moving) *movingLength);
+    return moving + movingLength -1;
+}
+
+void CreateWave() {
+
+    movingLength = 0; 
+    moving = realloc(moving, 0);
 
     InitObject(&fighter, 39, 23, 3, 2);
+
+    InitObject(GetMewMoving(), 37, 3 , 1, 1);
+    InitObject(GetMewMoving(), 39, 3 , 1, 1);
+    InitObject(GetMewMoving(), 41, 3 , 1, 1);
+    InitObject(GetMewMoving(), 43, 3 , 1, 1);
+}
+
+int main() {
+
+    CreateWave();
 
     do {
 
         clearMap();
+
+        for (int i = 0; i < movingLength; i++)
+            PutObjectOnMap(moving[i]);
         PutObjectOnMap(fighter);
 
         setCur(0, 0);
-        ShowMap();
+        ShowMap(10);
+
+        Sleep(10);
     
     }
     while (GetKeyState(VK_ESCAPE) >= 0);
