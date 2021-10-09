@@ -9,13 +9,21 @@
 typedef struct {
     float x, y;
     float width, height;
+    float horizSpeed;
+    float vertSpeed;
     char cType;
 }TObject;
 
 char map[mapHeight][mapWidth+1];
 TObject fighter;
+TObject *brick;
+int brickLength;
 TObject *moving;
 int movingLength;
+TObject *moving;
+int movingLength;
+TObject *pul;
+int pulLength;
 
 
 void clearMap() {
@@ -44,6 +52,52 @@ void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeigh
     (*obj).width = oWidth;
     (*obj).height = oHeight;
     (*obj).cType = inType;
+    (*obj).horizSpeed = 0.2;
+    (*obj).vertSpeed = 0;
+}
+
+BOOL IsCollision(TObject o1, TObject o2);
+
+void VertMoveObject(TObject *obj) {
+
+    (*obj).vertSpeed += 0.05;
+    SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vertSpeed);
+} 
+TObject *GetMewMoving();
+TObject *GetMewPul();
+
+void CreateWave();
+
+void FighterCollision() {
+
+    for (int i = 0; i < pulLength; i++) 
+        if (IsCollision(fighter, pul[i])) {
+
+            CreateWave();
+        }
+}
+
+void HorizonObject(TObject *obj) {
+
+    obj[0].x +=obj[0].horizSpeed;
+
+         for (int j = 0; j < movingLength; j++)
+            //  if ((moving[j].cType == '?') && (obj[0].vertSpeed) && (obj == moving)) {
+            //     InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
+            //     // pul[pulLength - 1].horizSpeed = 0;
+            //      pul[pulLength -1].vertSpeed;
+            // }
+            for (int i = 0; i < brickLength; i++) 
+            if (IsCollision(obj[0], brick[i])) {
+                obj[0].x -= obj[0].horizSpeed;
+                obj[0].horizSpeed = -obj[0].horizSpeed;
+                return;
+        }
+}
+
+BOOL IsPosInMap(int x, int y) {
+
+    return ((x >= 0) && (x < mapWidth) && (y >= 0) && (y < mapHeight));
 }
 
 void PutObjectOnMap(TObject obj) {
@@ -55,7 +109,8 @@ void PutObjectOnMap(TObject obj) {
 
     for (int i = ix; i < (ix + iWidth); i++)
         for (int j = iy; j < (iy + iHeight); j++)
-            map[j][i] = obj.cType;
+            if (IsPosInMap(i, j))
+                map[j][i] = obj.cType;
 }
 
 void setCur(int x, int y) {
@@ -66,6 +121,25 @@ void setCur(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
+void HorizonFighter(float dx) {
+
+    fighter.x -= dx;
+    for (int i = 0; i < brickLength; i++)
+        if (IsCollision(fighter, brick[i])) {
+
+            fighter.x += dx;
+            return;
+        }
+    fighter.x -= dx;
+}
+
+TObject *GetMewBrick() {
+
+    brickLength++;
+    brick = realloc(brick, sizeof(*brick) *brickLength);
+    return brick + brickLength -1;
+}
+
 TObject *GetMewMoving() {
 
     movingLength++;
@@ -73,12 +147,34 @@ TObject *GetMewMoving() {
     return moving + movingLength -1;
 }
 
+ TObject *GetMewPul() {
+
+     pulLength++;
+     pul = realloc(pul, sizeof(*pul) *pulLength);
+     return pul + pulLength -1;
+ }
+
+ void pulFighter(TObject *obj) {
+        
+    if ((obj == &fighter)) {
+        InitObject(GetMewPul(), fighter.x +1, fighter.y -1, 1, 1, '.');
+        //pul[movingLength -1].horizSpeed = 0;
+        pul[pulLength -1].vertSpeed = -2;
+       // VertMoveObject(pul, '.');
+    }
+ }
+
 void CreateWave() {
 
+    brickLength = 0; 
+    brick = realloc(brick, 0);
     movingLength = 0; 
     moving = realloc(moving, 0);
 
-    InitObject(&fighter, 39, 24, 2, 1, '@');
+    InitObject(&fighter, 39, 24, 3, 1, '@');
+
+    InitObject(GetMewBrick(), 0, 0, 1, 25, '#');
+    InitObject(GetMewBrick(), 79, 0, 1, 25, '#');
 
     InitObject(GetMewMoving(), 36, 1, 2, 1, '!');
     InitObject(GetMewMoving(), 40, 1, 2, 1, '!');
@@ -100,6 +196,8 @@ void CreateWave() {
     InitObject(GetMewMoving(), 48, 5, 2, 1, '?');
     InitObject(GetMewMoving(), 52, 5, 2, 1, '?');
     InitObject(GetMewMoving(), 56, 5, 2, 1, '?');
+   // if (moving == '?') 
+   //     InitObject(GetMewPul(), moving->x, moving->y+1, 1, 1, '.');
 
     InitObject(GetMewMoving(), 24, 7, 2, 1, '*');
     InitObject(GetMewMoving(), 28, 7, 2, 1, '*');
@@ -135,16 +233,43 @@ void CreateWave() {
     InitObject(GetMewMoving(), 60, 11, 2, 1, '*');
 }
 
+BOOL IsCollision(TObject o1, TObject o2) {
+
+    return ((o1.x + o1.width) > o2.x) && (o1.x < (o2.x + o2.width)) &&
+           ((o1.y + o1.height) > o2.y) && (o1.y < (o2.y + o2.height));
+}
+
 int main() {
 
     CreateWave();
+    
 
     do {
 
         clearMap();
+        
 
-        for (int i = 0; i < movingLength; i++)
+        if ((&fighter) && GetKeyState(VK_SPACE) < 0) pulFighter(&fighter);
+                                            
+              
+        if (GetKeyState('A') < 0) HorizonFighter(1);
+        if (GetKeyState('D') < 0) HorizonFighter(-1);
+
+        FighterCollision();
+
+        for (int i = 0; i < brickLength; i++) {
+            PutObjectOnMap(brick[i]);
+        }
+        for (int i = 0; i < movingLength; i++) {
+
+            HorizonObject(moving +i);
             PutObjectOnMap(moving[i]);
+        }
+        for (int i = 0; i < pulLength; i++) {
+
+            VertMoveObject(pul +i);
+            PutObjectOnMap(pul[i]);
+        }
         PutObjectOnMap(fighter);
 
         setCur(0, 0);
