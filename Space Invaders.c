@@ -12,6 +12,7 @@ typedef struct {
     float horizSpeed;
     float vertSpeed;
     char cType;
+    BOOL IsFiy;
 }TObject;
 
 char map[mapHeight][mapWidth+1];
@@ -60,33 +61,100 @@ BOOL IsCollision(TObject o1, TObject o2);
 
 void VertMoveObject(TObject *obj) {
 
+    (*obj).IsFiy = TRUE;
     (*obj).vertSpeed += 0.05;
     SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vertSpeed);
+    if (IsCollision(*obj, moving[0])) {
+
+        (*obj).IsFiy = FALSE;
+    }
 } 
 TObject *GetMewMoving();
 TObject *GetMewPul();
 
 void CreateWave();
 
+void DeleteMoving(int j) {
+
+    movingLength--;
+    moving[j] = moving[movingLength];
+    moving = realloc(moving, sizeof(*moving) *movingLength);
+}
+
+void DeletePul(int i) {
+
+    pulLength--;
+    pul[i] = pul[pulLength];
+    pul = realloc(pul, sizeof(*pul) *pulLength);
+}
+
+void PulCollision() {
+
+     for (int i = 0; i < pulLength; i++) 
+        for (int j = 0; j < movingLength; j++) 
+            if (IsCollision(pul[i], moving[i])) {
+                if ( (pul[i].IsFiy == FALSE) 
+                    && (pul[i].vertSpeed < 0) 
+                    && (pul[i].cType == '.')
+                    && ((pul[i].x + pul[i].width > moving[j].x)
+                    || (pul[i].x < moving[j].x + moving[j].width)
+                    || (pul[i].y + pul[i].height > moving[j].y)
+                    || (pul[i].y < moving[j].y + moving[j].height)) ) {
+
+                    DeleteMoving(j);
+                    j--;
+                    DeletePul(i); //((o1.x + o1.width) > o2.x) && (o1.x < (o2.x + o2.width)) &&
+                    i--;          //((o1.y + o1.height) > o2.y) && (o1.y < (o2.y + o2.height));
+                        continue;
+                    } else if  (movingLength == 0)
+                                 CreateWave();
+                }
+}
+
 void FighterCollision() {
 
-    for (int i = 0; i < pulLength; i++) 
-        if (IsCollision(fighter, pul[i])) {
-
+    for (int i = 0; i < pulLength; i++) {
+        if (IsCollision(fighter, pul[i])) 
+                
             CreateWave();
+    }
+    for (int i = 0; i < pulLength; i++) {
+     for (int j = 0; j < movingLength; j++) {
+        if (IsCollision(pul[i], moving[j])) {
+            if ( (pul[i].IsFiy == FALSE) 
+                && (pul[i].vertSpeed < 0) 
+                && (pul[i].y + pul[i].height > moving[j].y) ) {
+
+                    DeleteMoving(j);
+                        j--;
+                    DeletePul(i); //(o1.y + o1.height) > o2.y
+                       i--;          //(o1.x + o1.width) > o2.x
+                        continue;
+                    } else if  (moving[j].cType == 0)
+                                CreateWave();
+                }
         }
+    }
 }
 
 void HorizonObject(TObject *obj) {
 
     obj[0].x +=obj[0].horizSpeed;
 
-         for (int j = 0; j < movingLength; j++)
-            //  if ((moving[j].cType == '?') && (obj[0].vertSpeed) && (obj == moving)) {
-            //     InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
-            //     // pul[pulLength - 1].horizSpeed = 0;
-            //      pul[pulLength -1].vertSpeed;
-            // }
+        //  for (int j = 0; j < movingLength; j++) {
+                
+        //         if (   (obj[j].cType == '?') 
+        //             && ((obj[0].horizSpeed > 0)
+        //             || (obj[0].horizSpeed < 0))
+        //             && (obj == moving)) {
+        //                 for (int j = 0; j < movingLength; j++)
+
+        //            InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
+                
+        //         }
+                  
+        // } 
+
             for (int i = 0; i < brickLength; i++) 
             if (IsCollision(obj[0], brick[i])) {
                 obj[0].x -= obj[0].horizSpeed;
@@ -157,10 +225,8 @@ TObject *GetMewMoving() {
  void pulFighter(TObject *obj) {
         
     if ((obj == &fighter)) {
-        InitObject(GetMewPul(), fighter.x +1, fighter.y -1, 1, 1, '.');
-        //pul[movingLength -1].horizSpeed = 0;
-        pul[pulLength -1].vertSpeed = -2;
-       // VertMoveObject(pul, '.');
+        InitObject(GetMewPul(1), fighter.x +1, fighter.y -1, 1, 1, '.');
+        pul[pulLength -1].vertSpeed = -1.7;
     }
  }
 
@@ -264,11 +330,19 @@ int main() {
 
             HorizonObject(moving +i);
             PutObjectOnMap(moving[i]);
+           // Sleep(10);
         }
         for (int i = 0; i < pulLength; i++) {
 
             VertMoveObject(pul +i);
+            if ((pul[i].y > mapHeight) || (pul[i].y < 0)) {
+
+                DeletePul(i);
+                i--;
+                continue;
+            }
             PutObjectOnMap(pul[i]);
+           // Sleep(50);
         }
         PutObjectOnMap(fighter);
 
