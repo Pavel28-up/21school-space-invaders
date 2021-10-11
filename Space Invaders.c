@@ -26,6 +26,9 @@ int movingLength;
 TObject *pul;
 int pulLength;
 
+int wav = 1;
+int score;
+
 
 void clearMap() {
 
@@ -88,28 +91,6 @@ void DeletePul(int i) {
     pul = realloc(pul, sizeof(*pul) *pulLength);
 }
 
-void PulCollision() {
-
-     for (int i = 0; i < pulLength; i++) 
-        for (int j = 0; j < movingLength; j++) 
-            if (IsCollision(pul[i], moving[i])) {
-                if ( (pul[i].IsFiy == FALSE) 
-                    && (pul[i].vertSpeed < 0) 
-                    && (pul[i].cType == '.')
-                    && ((pul[i].x + pul[i].width > moving[j].x)
-                    || (pul[i].x < moving[j].x + moving[j].width)
-                    || (pul[i].y + pul[i].height > moving[j].y)
-                    || (pul[i].y < moving[j].y + moving[j].height)) ) {
-
-                    DeleteMoving(j);
-                    j--;
-                    DeletePul(i); //((o1.x + o1.width) > o2.x) && (o1.x < (o2.x + o2.width)) &&
-                    i--;          //((o1.y + o1.height) > o2.y) && (o1.y < (o2.y + o2.height));
-                        continue;
-                    } else if  (movingLength == 0)
-                                 CreateWave();
-                }
-}
 
 void FighterCollision() {
 
@@ -121,18 +102,18 @@ void FighterCollision() {
     for (int i = 0; i < pulLength; i++) {
      for (int j = 0; j < movingLength; j++) {
         if (IsCollision(pul[i], moving[j])) {
-            if ( (pul[i].IsFiy == FALSE) 
-                && (pul[i].vertSpeed < 0) 
-                && (pul[i].y + pul[i].height > moving[j].y) ) {
+          if (   (pul[i].cType == '.') 
+              && (pul[i].vertSpeed < 0)) {
 
-                    DeleteMoving(j);
-                        j--;
-                    DeletePul(i); //(o1.y + o1.height) > o2.y
-                       i--;          //(o1.x + o1.width) > o2.x
-                        continue;
-                    } else if  (moving[j].cType == 0)
-                                CreateWave();
-                }
+                score += 50;
+                DeleteMoving(j);
+                j--;
+                DeletePul(i);
+                i--;
+                continue;
+              }
+            } else if  (movingLength == 0)
+                        CreateWave();
         }
     }
 }
@@ -143,16 +124,12 @@ void HorizonObject(TObject *obj) {
 
         //  for (int j = 0; j < movingLength; j++) {
                 
-        //         if (   (obj[j].cType == '?') 
-        //             && ((obj[0].horizSpeed > 0)
-        //             || (obj[0].horizSpeed < 0))
-        //             && (obj == moving)) {
+        //         if    (obj[j].cType == '?')  {
         //                 for (int j = 0; j < movingLength; j++)
 
-        //            InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
+        //            //InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
                 
         //         }
-                  
         // } 
 
             for (int i = 0; i < brickLength; i++) 
@@ -230,6 +207,17 @@ TObject *GetMewMoving() {
     }
  }
 
+void PutScoreOnMap() {
+
+    char c[50];
+    sprintf(c, "Score: %d", score);
+    int len = strlen(c);
+    for (int i = 0; i < len; i++) {
+
+        map[1][i + 5] = c[i];
+    }
+}
+
 void CreateWave() {
 
     brickLength = 0; 
@@ -238,6 +226,7 @@ void CreateWave() {
     moving = realloc(moving, 0);
 
     InitObject(&fighter, 39, 24, 3, 1, '@');
+    score = 0;
 
     InitObject(GetMewBrick(), 0, 0, 1, 25, '#');
     InitObject(GetMewBrick(), 79, 0, 1, 25, '#');
@@ -345,6 +334,7 @@ int main() {
            // Sleep(50);
         }
         PutObjectOnMap(fighter);
+        PutScoreOnMap();
 
         setCur(0, 0);
         ShowMap(10);
