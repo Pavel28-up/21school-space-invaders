@@ -17,12 +17,13 @@ typedef struct {
 
 char map[mapHeight][mapWidth+1];
 TObject fighter;
+
 TObject *brick;
 int brickLength;
+
 TObject *moving;
 int movingLength;
-TObject *moving;
-int movingLength;
+
 TObject *pul;
 int pulLength;
 
@@ -71,14 +72,6 @@ void VertMoveObject(TObject *obj) {
     if (IsCollision(*obj, moving[0])) {
 
         (*obj).IsFiy = FALSE;
-            // if (moving[0].cType == '*') {
-
-            //     movingLength == 0;
-            //     wav++;
-            //     if (wav > 2) wav = 1;
-            //     CreateWave(wav);
-            //     Sleep(1000);
-            // }
     }
 }
 
@@ -109,9 +102,11 @@ void FighterCollision() {
     }
     for (int i = 0; i < pulLength; i++) {
      for (int j = 0; j < movingLength; j++) {
-        if (IsCollision(pul[i], moving[0])) {
+        if (IsCollision(pul[i], moving[j])) {
                 if (   (pul[0].cType == '.') 
-                    && (pul[0].vertSpeed < 0)) {
+                    && (pul[0].vertSpeed < 0)
+                    && ((pul[0].y >= (moving[j].y + moving[j].height)) 
+                    || (pul[0].x == (moving[j].x + moving[j].width))) ) {
 
                     if (moving[j].cType == '!') {
                     score += 350;
@@ -121,7 +116,7 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-                    if (moving[j].cType == '?') {
+                    if (moving[j].cType == '+') {
                     score += 250;
                     DeleteMoving(j);
                     j--;
@@ -129,7 +124,7 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-                    if (moving[j].cType == '|') {
+                    if (moving[j].cType == '?') {
                     score += 150;
                     DeleteMoving(j);
                     j--;
@@ -145,7 +140,14 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-              }
+                }
+            }
+            if ( (movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
+                for (int j = 0; j < movingLength; j++) 
+                 wav++;
+                if (wav > 2) 
+                     wav = 1;
+                    CreateWave(wav);
             }
         }
     }
@@ -155,19 +157,20 @@ void HorizonObject(TObject *obj) {
 
     obj[0].x +=obj[0].horizSpeed;
 
-            for (int i = 0; i < brickLength; i++) 
-            if (IsCollision(obj[0], brick[i])) {
-                obj[0].x -= obj[0].horizSpeed;
-                obj[0].horizSpeed = -obj[0].horizSpeed;
-                return;
-        }
+    for (int i = 0; i < brickLength; i++) 
+        if (IsCollision(obj[0], brick[i])) {
+            obj[0].x -= obj[0].horizSpeed;
+            obj[0].horizSpeed = -obj[0].horizSpeed;
+            return;
+    }
 
-    for (int j = 0; j < mapWidth; j++) {
-    for (int i = 0; i < movingLength; i++) 
-        if ((moving) && ((obj[i].x == (j+4)) || (obj[i].x == (j-4))) )
+    for (int j = 0; j < 79; j++)  {
+        if (   (obj[0].x == j++)
+            || (obj[0].x == j--) ) 
 
-            InitObject(GetMewPul(), obj[i].x, obj[i].y+1, 1, 1, '.');
-     } 
+            InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
+
+     }
 }
 
 BOOL IsPosInMap(int x, int y) {
@@ -278,21 +281,21 @@ void CreateWave(int wav) {
         InitObject(GetMewMoving(), 44, 1, 2, 1, '!');
         InitObject(GetMewMoving(), 48, 1, 2, 1, '!');
 
-        InitObject(GetMewMoving(), 32, 3, 2, 1, '?');
-        InitObject(GetMewMoving(), 36, 3, 2, 1, '?');
-        InitObject(GetMewMoving(), 40, 3, 2, 1, '?');
-        InitObject(GetMewMoving(), 44, 3, 2, 1, '?');
-        InitObject(GetMewMoving(), 48, 3, 2, 1, '?');
-        InitObject(GetMewMoving(), 52, 3, 2, 1, '?');
+        InitObject(GetMewMoving(), 32, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 36, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 52, 3, 2, 1, '+');
 
-        InitObject(GetMewMoving(), 28, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 32, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 36, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 40, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 44, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 48, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 52, 5, 2, 1, '|');
-        InitObject(GetMewMoving(), 56, 5, 2, 1, '|');
+        InitObject(GetMewMoving(), 28, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 32, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 36, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 40, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 44, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 48, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 52, 5, 2, 1, '?');
+        InitObject(GetMewMoving(), 56, 5, 2, 1, '?');
 
         InitObject(GetMewMoving(), 24, 7, 2, 1, '*');
         InitObject(GetMewMoving(), 28, 7, 2, 1, '*');
