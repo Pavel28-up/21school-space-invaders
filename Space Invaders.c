@@ -29,6 +29,7 @@ int pulLength;
 
 int wav = 1;
 int score;
+int maxWav;
 
 
 void clearMap() {
@@ -92,7 +93,6 @@ void DeletePul(int i) {
     pul = realloc(pul, sizeof(*pul) *pulLength);
 }
 
-
 void FighterCollision() {
 
     for (int i = 0; i < pulLength; i++) {
@@ -145,10 +145,9 @@ void FighterCollision() {
             if ( (movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
                 for (int j = 0; j < movingLength; j++) 
                  wav++;
-                if (wav > 2) 
-                     wav = 1;
+                if (wav > maxWav)  wav = 1;
                     CreateWave(wav);
-            }
+            } 
         }
     }
 }
@@ -388,6 +387,8 @@ void CreateWave(int wav) {
         InitObject(GetMewMoving(), 56, 11, 2, 1, '*');
         InitObject(GetMewMoving(), 60, 11, 2, 1, '*');
     }
+
+    maxWav = 2;
 }
 
 BOOL IsCollision(TObject o1, TObject o2) {
