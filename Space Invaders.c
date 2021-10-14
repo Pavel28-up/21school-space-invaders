@@ -157,9 +157,11 @@ void FighterCollision() {
             }
             if ( (movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
                 for (int j = 0; j < movingLength; j++) 
-                    wav++;
-                if (wav > maxWav) wav = 1;//ScreensaverFinish();
+                   
+                   wav++;
+                if (wav > maxWav) ScreensaverFinish();;
 
+                    
                     ScreensaverWav();
                     CreateWave(wav);
             } 
@@ -176,11 +178,6 @@ void HorizonObject(TObject *obj) {
             obj[0].x -= obj[0].horizSpeed;
             obj[0].horizSpeed = -obj[0].horizSpeed;
             return;
-            // if (wav+=1) {
-            //     for (int j = 0; j < movingLength; j++)
-            //         if (obj == moving)
-            //             obj[0].horizSpeed = 1;
-            // }
     }
 
     for (int j = 0; j < 79; j++)  {
@@ -505,7 +502,7 @@ void ScreensaverGameOver() {
 void ScreensaverFinish() {
 
     system("cls");
-    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth.");
+    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth. \n\n \t Pavel Sergeyevich Vavilov, Lead Developer \n\n \t Developer-Creator of Levels Smychkova Anna Evgenievna \n\n \t Developer");
     Sleep(10000);
     system("cls");
 }
@@ -513,15 +510,9 @@ void ScreensaverFinish() {
 int main() {
 
     CreateWave(wav);
-    //  if (wav == 2) {
-    //     for (int i = 0; i < movingLength; i++) {
-    //             moving[i].horizSpeed += 1;
-    //             HorizonObject(moving +i);
-    //     }
-    //         }
     ScreensaverStart();
     ScreensaverWav();
-
+    
     do {
 
         clearMap();
