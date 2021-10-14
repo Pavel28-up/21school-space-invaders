@@ -17,7 +17,6 @@ typedef struct {
 
 char map[mapHeight][mapWidth+1];
 TObject fighter;
-
 TObject *brick;
 int brickLength;
 
@@ -62,8 +61,19 @@ void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeigh
     (*obj).vertSpeed = 0;
 }
 
-BOOL IsCollision(TObject o1, TObject o2);
 void CreateWave(int wav);
+void ScreensaverGameOver();
+
+void PlayerDead() {
+
+    system("color 4F");
+    Sleep(500);
+    ScreensaverGameOver();
+    CreateWave(wav);
+    system("color 07");
+}
+
+BOOL IsCollision(TObject o1, TObject o2);
 
 void VertMoveObject(TObject *obj) {
 
@@ -93,12 +103,15 @@ void DeletePul(int i) {
     pul = realloc(pul, sizeof(*pul) *pulLength);
 }
 
+void  ScreensaverWav();
+void ScreensaverFinish();
+
 void FighterCollision() {
 
     for (int i = 0; i < pulLength; i++) {
         if (IsCollision(fighter, pul[i])) 
                 
-            CreateWave(wav);
+            PlayerDead();
     }
     for (int i = 0; i < pulLength; i++) {
      for (int j = 0; j < movingLength; j++) {
@@ -144,8 +157,10 @@ void FighterCollision() {
             }
             if ( (movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
                 for (int j = 0; j < movingLength; j++) 
-                 wav++;
-                if (wav > maxWav)  wav = 1;
+                    wav++;
+                if (wav > maxWav) wav = 1;//ScreensaverFinish();
+
+                    ScreensaverWav();
                     CreateWave(wav);
             } 
         }
@@ -161,6 +176,11 @@ void HorizonObject(TObject *obj) {
             obj[0].x -= obj[0].horizSpeed;
             obj[0].horizSpeed = -obj[0].horizSpeed;
             return;
+            // if (wav+=1) {
+            //     for (int j = 0; j < movingLength; j++)
+            //         if (obj == moving)
+            //             obj[0].horizSpeed = 1;
+            // }
     }
 
     for (int j = 0; j < 79; j++)  {
@@ -386,9 +406,70 @@ void CreateWave(int wav) {
         InitObject(GetMewMoving(), 52, 11, 2, 1, '*');
         InitObject(GetMewMoving(), 56, 11, 2, 1, '*');
         InitObject(GetMewMoving(), 60, 11, 2, 1, '*');
+        for (int i = 0; i < movingLength; i++)
+                 moving[i].horizSpeed += 1;
     }
 
-    maxWav = 2;
+    if (wav == 3) {
+        InitObject(GetMewBrick(), 0, 0, 1, 25, '#');
+        InitObject(GetMewBrick(), 79, 0, 1, 25, '#');
+
+        InitObject(GetMewMoving(), 36, 1, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 1, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 1, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 1, 2, 1, '+');
+
+        InitObject(GetMewMoving(), 32, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 36, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 52, 3, 2, 1, '+');
+
+        InitObject(GetMewMoving(), 28, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 32, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 36, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 52, 5, 2, 1, '+');
+        InitObject(GetMewMoving(), 56, 5, 2, 1, '+');
+
+        InitObject(GetMewMoving(), 24, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 28, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 32, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 36, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 52, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 56, 7, 2, 1, '+');
+        InitObject(GetMewMoving(), 60, 7, 2, 1, '+');
+
+        InitObject(GetMewMoving(), 24, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 28, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 32, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 36, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 52, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 56, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 60, 9, 2, 1, '*');
+
+        InitObject(GetMewMoving(), 24, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 28, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 32, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 36, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 40, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 48, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 52, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 56, 11, 2, 1, '+');
+        InitObject(GetMewMoving(), 60, 11, 2, 1, '+');
+    }
+
+    maxWav = 3;
 }
 
 BOOL IsCollision(TObject o1, TObject o2) {
@@ -397,10 +478,49 @@ BOOL IsCollision(TObject o1, TObject o2) {
            ((o1.y + o1.height) > o2.y) && (o1.y < (o2.y + o2.height));
 }
 
+void ScreensaverStart() {
+
+    system("cls");
+    printf("\n\n\n\n\n \t\t\t\t  Space Invaders \n\n \t\t\t\t  Left A \n\n \t\t\t\t  Right D \n\n \t\t\t\t  Shoot SPACE \n\n \t\t\t\t  Exit ESCAPE");
+    Sleep(10000);
+    system("cls");
+}
+
+void ScreensaverWav() {
+
+    system("cls");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  Wav: %d", wav);
+    Sleep(3000);
+    system("cls");
+}
+
+void ScreensaverGameOver() {
+
+    system("cls");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  GAME\n \t\t\t\t  OVER");
+    Sleep(10000);
+    system("cls");
+}
+
+void ScreensaverFinish() {
+
+    system("cls");
+    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth.");
+    Sleep(10000);
+    system("cls");
+}
+
 int main() {
 
     CreateWave(wav);
-    
+    //  if (wav == 2) {
+    //     for (int i = 0; i < movingLength; i++) {
+    //             moving[i].horizSpeed += 1;
+    //             HorizonObject(moving +i);
+    //     }
+    //         }
+    ScreensaverStart();
+    ScreensaverWav();
 
     do {
 
