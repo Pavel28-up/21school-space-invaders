@@ -30,7 +30,6 @@ int wav = 1;
 int score;
 int maxWav;
 
-
 void clearMap() {
 
     for (int i = 0; i < mapWidth; i++)
@@ -65,12 +64,12 @@ void CreateWave(int wav);
 void ScreensaverGameOver();
 
 void PlayerDead() {
-
-    system("color 4F");
-    Sleep(500);
-    ScreensaverGameOver();
-    CreateWave(wav);
-    system("color 07");
+    
+        system("color 4F");
+        Sleep(500);
+        ScreensaverGameOver();
+        CreateWave(wav);
+        system("color 0F");
 }
 
 BOOL IsCollision(TObject o1, TObject o2);
@@ -116,10 +115,9 @@ void FighterCollision() {
     for (int i = 0; i < pulLength; i++) {
      for (int j = 0; j < movingLength; j++) {
         if (IsCollision(pul[i], moving[j])) {
-                if (   (pul[0].cType == '.') 
-                    && (pul[0].vertSpeed < 0)
-                    && ((pul[0].y >= (moving[j].y + moving[j].height)) 
-                    || (pul[0].x == (moving[j].x + moving[j].width))) ) {
+                if (   (pul[i].cType == '.') 
+                    && (pul[i].vertSpeed < 0)
+                    && (pul[0].y >= (moving[0].y + moving[0].height)) ) {
 
                     if (moving[j].cType == '!') {
                     score += 350;
@@ -157,14 +155,18 @@ void FighterCollision() {
             }
             if ( (movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
                 for (int j = 0; j < movingLength; j++) 
-                   
-                   wav++;
-                if (wav > maxWav) ScreensaverFinish();;
 
-                    
-                    ScreensaverWav();
-                    CreateWave(wav);
-            } 
+                    wav++;
+
+                    if (wav > maxWav) {
+
+                        ScreensaverFinish();
+                        wav = 0;
+                    } else {
+                        ScreensaverWav();
+                        CreateWave(wav);
+                    }
+            }
         }
     }
 }
@@ -256,25 +258,14 @@ TObject *GetMewMoving() {
     }
  }
 
-void PutScoreOnMap() {
-
-    char c[50];
-    sprintf(c, "Score: %d", score);
-    int len = strlen(c);
-    for (int i = 0; i < len; i++) {
-
-        map[0][i + 5] = c[i];
-    }
-}
-
 void WavOnMap() {
 
     char t[50];
-    sprintf(t, "Wav: %d", wav);
+    sprintf(t, "Score: %d   Wav: %d", score, wav);
     int len = strlen(t);
     for (int i = 0; i < len; i++) {
 
-        map[0][i + 20] = t[i];
+        map[0][i + 3] = t[i];
     }
 }
 
@@ -403,8 +394,6 @@ void CreateWave(int wav) {
         InitObject(GetMewMoving(), 52, 11, 2, 1, '*');
         InitObject(GetMewMoving(), 56, 11, 2, 1, '*');
         InitObject(GetMewMoving(), 60, 11, 2, 1, '*');
-        for (int i = 0; i < movingLength; i++)
-                 moving[i].horizSpeed += 1;
     }
 
     if (wav == 3) {
@@ -502,17 +491,28 @@ void ScreensaverGameOver() {
 void ScreensaverFinish() {
 
     system("cls");
-    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth. \n\n \t Pavel Sergeyevich Vavilov, Lead Developer \n\n \t Developer-Creator of Levels Smychkova Anna Evgenievna \n\n \t Developer");
+    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth. \n\n \t Pavel Sergeyevich Vavilov, Lead Developer \n\n \t Developer-Creator of Levels Smychkova Anna Evgenievna \n\n \t Developer Vladimir Sergeyevich Panov");
     Sleep(10000);
+    system("cls");
+}
+
+void ScreensaverLogo() {
+
+    system("cls");
+    system("color F4");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  VELES  COMPANY  PRESENT");
+    Sleep(10000);
+    system("color 0F");
     system("cls");
 }
 
 int main() {
 
     CreateWave(wav);
+    ScreensaverLogo();
     ScreensaverStart();
     ScreensaverWav();
-    
+
     do {
 
         clearMap();
@@ -546,12 +546,11 @@ int main() {
             PutObjectOnMap(pul[i]);
         }
         PutObjectOnMap(fighter);
-        PutScoreOnMap();
         WavOnMap();
 
         setCur(0, 0);
         ShowMap(10);
-
+        
         Sleep(10);
     
     }
