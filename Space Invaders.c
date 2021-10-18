@@ -29,6 +29,7 @@ int pulLength;
 int wav = 1;
 int score;
 int maxWav;
+int life = 5;
 
 void clearMap() {
 
@@ -65,10 +66,15 @@ void ScreensaverGameOver();
 
 void PlayerDead() {
     
+        life--;
         system("color 4F");
         Sleep(500);
-        ScreensaverGameOver();
         CreateWave(wav);
+        if (life == 0) {
+            ScreensaverGameOver();
+            wav = 1;
+            life = 5;
+        }
         system("color 0F");
 }
 
@@ -110,7 +116,7 @@ void FighterCollision() {
     for (int i = 0; i < pulLength; i++) {
         if (IsCollision(fighter, pul[i])) 
                 
-            PlayerDead();
+           PlayerDead();
     }
     for (int i = 0; i < pulLength; i++) {
      for (int j = 0; j < movingLength; j++) {
@@ -151,19 +157,28 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
+                    if (moving[j].cType == 'o') {
+                    score += 450;
+                    DeleteMoving(j);
+                    j--;
+                    DeletePul(i);
+                    i--;
+                    continue;
+                    }
                 }
             }
-            if ( (movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
+            if ((movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
                 for (int j = 0; j < movingLength; j++) 
 
                     wav++;
 
-                    if (wav > maxWav) {
-
-                        ScreensaverFinish();
+                    if (wav > 4) {
+                         
+                        //ScreensaverFinish();
                         wav = 0;
+                        life = 5;
                     } else {
-                        ScreensaverWav();
+                       // ScreensaverWav();
                         CreateWave(wav);
                     }
             }
@@ -175,20 +190,37 @@ void HorizonObject(TObject *obj) {
 
     obj[0].x +=obj[0].horizSpeed;
 
-    for (int i = 0; i < brickLength; i++) 
+    for (int i = 0; i < brickLength; i++)  {
         if (IsCollision(obj[0], brick[i])) {
             obj[0].x -= obj[0].horizSpeed;
             obj[0].horizSpeed = -obj[0].horizSpeed;
             return;
+        }
     }
 
     for (int j = 0; j < 79; j++)  {
-        if (   (obj[0].x == j++)
+        if (   ((obj[0].cType == '!') && (obj[0].cType == '+') && (obj[0].cType == '?') && (obj[0].cType == '*'))
+            || (obj[0].x == j++)
             || (obj[0].x == j--) ) 
 
             InitObject(GetMewPul(), obj[0].x, obj[0].y+1, 1, 1, '.');
 
      }
+}
+
+void HorizonMoving(TObject *obj) {
+
+    for (int k = 0; k < movingLength; k++) {
+    obj[0].x +=obj[0].horizSpeed;
+    obj[0].cType == 'o';
+
+        if (IsCollision(obj[0], moving[k])) {
+            for (int k = 0; k < movingLength; k++)
+            obj[0].x -= obj[0].horizSpeed;
+            obj[0].horizSpeed = -obj[0].horizSpeed;
+            return;
+        }
+    }
 }
 
 BOOL IsPosInMap(int x, int y) {
@@ -261,7 +293,7 @@ TObject *GetMewMoving() {
 void WavOnMap() {
 
     char t[50];
-    sprintf(t, "Score: %d   Wav: %d", score, wav);
+    sprintf(t, "Score: %d   Wav: %d  life: %d", score, wav, life);
     int len = strlen(t);
     for (int i = 0; i < len; i++) {
 
@@ -454,8 +486,105 @@ void CreateWave(int wav) {
         InitObject(GetMewMoving(), 56, 11, 2, 1, '+');
         InitObject(GetMewMoving(), 60, 11, 2, 1, '+');
     }
+    if (wav == 4) {
+        InitObject(GetMewBrick(), 0, 0, 1, 25, '#');
+        InitObject(GetMewBrick(), 79, 0, 1, 25, '#');
 
-    maxWav = 3;
+            InitObject(GetMewMoving(), 34, 2, 2, 1, '!');
+        InitObject(GetMewMoving(), 36, 2, 2, 1, 'o');
+        InitObject(GetMewMoving(), 38, 2, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 2, 2, 1, 'o');
+        InitObject(GetMewMoving(), 42, 2, 2, 1, 'o');
+            InitObject(GetMewMoving(), 44, 2, 2, 1, '!');
+
+            InitObject(GetMewMoving(), 32, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 34, 3, 2, 1, 'o');
+            InitObject(GetMewMoving(), 36, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 38, 3, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 3, 2, 1, 'o');
+            InitObject(GetMewMoving(), 42, 3, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 3, 2, 1, 'o');
+            InitObject(GetMewMoving(), 46, 3, 2, 1, '+');
+
+            InitObject(GetMewMoving(), 30, 4, 2, 1, '?');
+        InitObject(GetMewMoving(), 32, 4, 2, 1, 'o');
+        InitObject(GetMewMoving(), 34, 4, 2, 1, 'o');
+            InitObject(GetMewMoving(), 36, 4, 2, 1, '?');
+        InitObject(GetMewMoving(), 38, 4, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 4, 2, 1, 'o');
+            InitObject(GetMewMoving(), 42, 4, 2, 1, '?');
+        InitObject(GetMewMoving(), 44, 4, 2, 1, 'o');
+        InitObject(GetMewMoving(), 46, 4, 2, 1, 'o');
+            InitObject(GetMewMoving(), 48, 4, 2, 1, '?');
+
+            InitObject(GetMewMoving(), 28, 5, 2, 1, '*');
+        InitObject(GetMewMoving(), 30, 5, 2, 1, 'o');
+        InitObject(GetMewMoving(), 32, 5, 2, 1, 'o');
+            InitObject(GetMewMoving(), 34, 5, 2, 1, '*');
+        InitObject(GetMewMoving(), 36, 5, 2, 1, 'o');
+        InitObject(GetMewMoving(), 38, 5, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 5, 2, 1, 'o');
+        InitObject(GetMewMoving(), 42, 5, 2, 1, 'o');
+            InitObject(GetMewMoving(), 44, 5, 2, 1, '*');
+        InitObject(GetMewMoving(), 46, 5, 2, 1, 'o');
+        InitObject(GetMewMoving(), 48, 5, 2, 1, 'o');
+            InitObject(GetMewMoving(), 50, 5, 2, 1, '*');
+
+            InitObject(GetMewMoving(), 28, 6, 2, 1, '*');
+        InitObject(GetMewMoving(), 30, 6, 2, 1, 'o');
+        InitObject(GetMewMoving(), 32, 6, 2, 1, 'o');
+            InitObject(GetMewMoving(), 34, 6, 2, 1, '*');
+        InitObject(GetMewMoving(), 36, 6, 2, 1, 'o');
+        InitObject(GetMewMoving(), 38, 6, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 6, 2, 1, 'o');
+        InitObject(GetMewMoving(), 42, 6, 2, 1, 'o');
+            InitObject(GetMewMoving(), 44, 6, 2, 1, '*');
+        InitObject(GetMewMoving(), 46, 6, 2, 1, 'o');
+        InitObject(GetMewMoving(), 48, 6, 2, 1, 'o');
+            InitObject(GetMewMoving(), 50, 6, 2, 1, '*');
+
+            InitObject(GetMewMoving(), 28, 7, 2, 1, '*');
+        InitObject(GetMewMoving(), 30, 7, 2, 1, 'o');
+        InitObject(GetMewMoving(), 32, 7, 2, 1, 'o');
+            InitObject(GetMewMoving(), 34, 7, 2, 1, '*');
+        InitObject(GetMewMoving(), 36, 7, 2, 1, 'o');
+        InitObject(GetMewMoving(), 38, 7, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 7, 2, 1, 'o');
+        InitObject(GetMewMoving(), 42, 7, 2, 1, 'o');
+            InitObject(GetMewMoving(), 44, 7, 2, 1, '*');
+        InitObject(GetMewMoving(), 46, 7, 2, 1, 'o');
+        InitObject(GetMewMoving(), 48, 7, 2, 1, 'o');
+            InitObject(GetMewMoving(), 50, 7, 2, 1, '*');
+
+            InitObject(GetMewMoving(), 30, 8, 2, 1, '?');
+        InitObject(GetMewMoving(), 32, 8, 2, 1, 'o');
+        InitObject(GetMewMoving(), 34, 8, 2, 1, 'o');
+            InitObject(GetMewMoving(), 36, 8, 2, 1, '?');
+        InitObject(GetMewMoving(), 38, 8, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 8, 2, 1, 'o');
+            InitObject(GetMewMoving(), 42, 8, 2, 1, '?');
+        InitObject(GetMewMoving(), 44, 8, 2, 1, 'o');
+        InitObject(GetMewMoving(), 46, 8, 2, 1, 'o');
+            InitObject(GetMewMoving(), 48, 8, 2, 1, '?');
+
+            InitObject(GetMewMoving(), 32, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 34, 9, 2, 1, 'o');
+            InitObject(GetMewMoving(), 36, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 38, 9, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 9, 2, 1, 'o');
+            InitObject(GetMewMoving(), 42, 9, 2, 1, '+');
+        InitObject(GetMewMoving(), 44, 9, 2, 1, 'o');
+            InitObject(GetMewMoving(), 46, 9, 2, 1, '+');
+
+        InitObject(GetMewMoving(), 34, 10, 2, 1, '!');
+        InitObject(GetMewMoving(), 36, 10, 2, 1, 'o');
+        InitObject(GetMewMoving(), 38, 10, 2, 1, 'o');
+        InitObject(GetMewMoving(), 40, 10, 2, 1, 'o');
+        InitObject(GetMewMoving(), 42, 10, 2, 1, 'o');
+        InitObject(GetMewMoving(), 44, 10, 2, 1, '!');
+    }
+
+    maxWav = 4;
 }
 
 BOOL IsCollision(TObject o1, TObject o2) {
@@ -509,9 +638,9 @@ void ScreensaverLogo() {
 int main() {
 
     CreateWave(wav);
-    ScreensaverLogo();
-    ScreensaverStart();
-    ScreensaverWav();
+    // ScreensaverLogo();
+    // ScreensaverStart();
+    // ScreensaverWav();
 
     do {
 
@@ -549,7 +678,7 @@ int main() {
         WavOnMap();
 
         setCur(0, 0);
-        ShowMap(10);
+        ShowMap();
         
         Sleep(10);
     
