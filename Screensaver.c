@@ -20,7 +20,7 @@ void ScreensaverGameOver() {
 void ScreensaverFinish() {
 
     system("cls");
-    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth. \n\n \t Pavel Sergeyevich Vavilov, Lead Developer \n\n \t Developer-Creator of Levels Smychkova Anna Evgenievna \n\n \t Developer Vladimir Sergeyevich Panov");
+    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth. \n\n \t Pavel Sergeyevich Vavilov, Lead Developer \n\n \t Developer-Creator of Levels Smychkova Anna Evgenievna");
     Sleep(5000);
     system("cls");
 }
