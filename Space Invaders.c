@@ -3,8 +3,9 @@
 #include <math.h>
 #include <windows.h>
 
-#define mapWidth 80
-#define mapHeight 25
+#include "map.h"
+#include "Screensaver.h"
+#include "logo.h"
 
 typedef struct {
     float x, y;
@@ -15,7 +16,6 @@ typedef struct {
     BOOL IsFiy;
 }TObject;
 
-char map[mapHeight][mapWidth+1];
 TObject fighter;
 TObject *brick;
 int brickLength;
@@ -31,18 +31,15 @@ int score;
 int maxWav;
 int life = 5;
 
-void clearMap() {
+void WavOnMap() {
 
-    for (int i = 0; i < mapWidth; i++)
-        map[0][i] = ' ';
-    for (int j = 0; j < mapHeight; j++)
-        sprintf(map[j], map[0]);
-}
+    char t[50];
+    sprintf(t, "Score: %d   Wave: %d  life: %d", score, wav, life);
+    int len = strlen(t);
+    for (int i = 0; i < len; i++) {
 
-void ShowMap() {
-
-    for (int j = 0; j < mapHeight; j++)
-        printf("%s\n", map[j]);
+        map[0][i + 3] = t[i];
+    }
 }
 
 void SetObjectPos(TObject *obj, float xPos, float yPos) {
@@ -57,7 +54,7 @@ void InitObject(TObject *obj, float xPos, float yPos, float oWidth, float oHeigh
     (*obj).width = oWidth;
     (*obj).height = oHeight;
     (*obj).cType = inType;
-    (*obj).horizSpeed = 0.2;
+    (*obj).horizSpeed = 0.2 * wav;
     (*obj).vertSpeed = 0;
 }
 
@@ -65,7 +62,7 @@ void CreateWave(int wav);
 void ScreensaverGameOver();
 
 void PlayerDead() {
-    
+
         life--;
         system("color 4F");
         Sleep(500);
@@ -115,7 +112,7 @@ void FighterCollision() {
 
     for (int i = 0; i < pulLength; i++) {
         if (IsCollision(fighter, pul[i])) 
-                
+
            PlayerDead();
     }
     for (int i = 0; i < pulLength; i++) {
@@ -173,12 +170,12 @@ void FighterCollision() {
                     wav++;
 
                     if (wav > 4) {
-                         
-                        //ScreensaverFinish();
+
+                        ScreensaverFinish();
                         wav = 0;
                         life = 5;
                     } else {
-                       // ScreensaverWav();
+                        ScreensaverWav();
                         CreateWave(wav);
                     }
             }
@@ -283,23 +280,12 @@ TObject *GetMewMoving() {
  }
 
  void pulFighter(TObject *obj) {
-        
+
     if ((obj == &fighter)) {
         InitObject(GetMewPul(1), fighter.x +1, fighter.y -1, 1, 1, '.');
         pul[pulLength -1].vertSpeed = -1.7;
     }
  }
-
-void WavOnMap() {
-
-    char t[50];
-    sprintf(t, "Score: %d   Wav: %d  life: %d", score, wav, life);
-    int len = strlen(t);
-    for (int i = 0; i < len; i++) {
-
-        map[0][i + 3] = t[i];
-    }
-}
 
 void CreateWave(int wav) {
 
@@ -593,63 +579,29 @@ BOOL IsCollision(TObject o1, TObject o2) {
            ((o1.y + o1.height) > o2.y) && (o1.y < (o2.y + o2.height));
 }
 
-void ScreensaverStart() {
-
-    system("cls");
-    printf("\n\n\n\n\n \t\t\t\t  Space Invaders \n\n \t\t\t\t  Left A \n\n \t\t\t\t  Right D \n\n \t\t\t\t  Shoot SPACE \n\n \t\t\t\t  Exit ESCAPE");
-    Sleep(10000);
-    system("cls");
-}
-
 void ScreensaverWav() {
 
     system("cls");
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  Wav: %d", wav);
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  Wave: %d", wav);
     Sleep(3000);
-    system("cls");
-}
-
-void ScreensaverGameOver() {
-
-    system("cls");
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  GAME\n \t\t\t\t  OVER");
-    Sleep(10000);
-    system("cls");
-}
-
-void ScreensaverFinish() {
-
-    system("cls");
-    printf("\n\n\n\n\n\n\n \t\t  Congratulations, you have defended the earth. \n\n \t Pavel Sergeyevich Vavilov, Lead Developer \n\n \t Developer-Creator of Levels Smychkova Anna Evgenievna \n\n \t Developer Vladimir Sergeyevich Panov");
-    Sleep(10000);
-    system("cls");
-}
-
-void ScreensaverLogo() {
-
-    system("cls");
-    system("color F4");
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n \t\t\t\t  VELES  COMPANY  PRESENT");
-    Sleep(10000);
-    system("color 0F");
     system("cls");
 }
 
 int main() {
 
     CreateWave(wav);
-    // ScreensaverLogo();
-    // ScreensaverStart();
-    // ScreensaverWav();
+    ScreensaverLogo();
+    ScreensaverStart();
+    ScreensaverWav();
 
     do {
 
         clearMap();
-        
+
 
         if ((&fighter) && GetKeyState(VK_SPACE) < 0) pulFighter(&fighter);
-                                            
-              
+
+
         if (GetKeyState('A') < 0) HorizonFighter(1);
         if (GetKeyState('D') < 0) HorizonFighter(-1);
 
@@ -679,12 +631,12 @@ int main() {
 
         setCur(0, 0);
         ShowMap();
-        
+
         Sleep(10);
-    
+
     }
     while (GetKeyState(VK_ESCAPE) >= 0);
-    
+
 
    return 0;
 }
