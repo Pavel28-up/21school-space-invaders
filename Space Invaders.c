@@ -70,6 +70,7 @@ void PlayerDead() {
         if (life == 0) {
             ScreensaverGameOver();
             wav = 1;
+            score = 0;
             life = 5;
         }
         system("color 0F");
@@ -115,14 +116,14 @@ void FighterCollision() {
 
            PlayerDead();
     }
-    for (int i = 0; i < pulLength; i++) {
+    for (int i = 0; i < pulLength; i++) 
      for (int j = 0; j < movingLength; j++) {
         if (IsCollision(pul[i], moving[j])) {
                 if (   (pul[i].cType == '.') 
                     && (pul[i].vertSpeed < 0)
                     && (pul[0].y >= (moving[0].y + moving[0].height)) ) {
 
-                    if (moving[j].cType == '!') {
+                    if ((moving[j].cType == '!') && (pul[i].cType == '.')) {
                     score += 350;
                     DeleteMoving(j);
                     j--;
@@ -130,7 +131,7 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-                    if (moving[j].cType == '+') {
+                    if ((moving[j].cType == '+') && (pul[i].cType == '.')) {
                     score += 250;
                     DeleteMoving(j);
                     j--;
@@ -138,7 +139,7 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-                    if (moving[j].cType == '?') {
+                    if ((moving[j].cType == '?') && (pul[i].cType == '.')) {
                     score += 150;
                     DeleteMoving(j);
                     j--;
@@ -146,7 +147,7 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-                    if (moving[j].cType == '*') {
+                    if ((moving[j].cType == '*') && (pul[i].cType == '.')) {
                     score += 50;
                     DeleteMoving(j);
                     j--;
@@ -154,7 +155,7 @@ void FighterCollision() {
                     i--;
                     continue;
                     }
-                    if (moving[j].cType == 'o') {
+                    if ((moving[j].cType == 'o') && (pul[i].cType == '.')) {
                     score += 450;
                     DeleteMoving(j);
                     j--;
@@ -164,23 +165,20 @@ void FighterCollision() {
                     }
                 }
             }
-            if ((movingLength == (j >= 0)) == (pul[0].cType == '.') ) {
-                for (int j = 0; j < movingLength; j++) 
+        if (movingLength == (j >= 0)) {
+            for (int j = 0; j < movingLength; j++) 
+                wav++;
+                ScreensaverWav();
+                CreateWave(wav);
+                if (wav > maxWav) {
 
-                    wav++;
-
-                    if (wav > 4) {
-
-                        ScreensaverFinish();
-                        wav = 0;
-                        life = 5;
-                    } else {
-                        ScreensaverWav();
-                        CreateWave(wav);
-                    }
-            }
+                    ScreensaverFinish();
+                    wav = 0;
+                    score = 0;
+                    life = 5;
+                }
         }
-    }
+        }
 }
 
 void HorizonObject(TObject *obj) {
@@ -295,7 +293,6 @@ void CreateWave(int wav) {
     moving = realloc(moving, 0);
 
     InitObject(&fighter, 39, 24, 3, 1, '@');
-    score = 0;
 
     if (wav == 1) {
         InitObject(GetMewBrick(), 0, 0, 1, 25, '#');
@@ -635,7 +632,7 @@ int main() {
         Sleep(10);
 
     }
-    while (GetKeyState(VK_ESCAPE) >= 0);
+    while ((GetKeyState(VK_ESCAPE) >= 0));
 
 
    return 0;
